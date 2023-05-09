@@ -2,11 +2,14 @@ package de.mehtrick.getraenkeautomaddd.facade;
 
 import de.mehtrick.getraenkeautomaddd.AbstractIntegrationTest;
 import de.mehtrick.getraenkeautomaddd.domain.getraenke.GetraenkeTyp;
+import de.mehtrick.getraenkeautomaddd.domain.kasse.Muenze;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import static de.mehtrick.getraenkeautomaddd.domain.kasse.MuenzTyp.EIN_EURO;
 
 class KundenInterfaceTest extends AbstractIntegrationTest {
 
@@ -25,6 +28,7 @@ class KundenInterfaceTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void waehleGetraenk() {
         var getraenkeAutomat = getraenkeAutomatRepository.findById(automatReferenz);
         Assertions.assertThat(getraenkeAutomat.get().getGetraenkeWunsch()).isNull();
@@ -37,7 +41,18 @@ class KundenInterfaceTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @Transactional
     void wirfMuenzeEin() {
+        var getraenkeAutomat = getraenkeAutomatRepository.findById(automatReferenz);
+        Assertions.assertThat(getraenkeAutomat.get().getEingeworfeneMuenzen()).hasSize(0);
+
+        kundenInterface.wirfMuenzeEin(automatReferenz, Muenze.vomTyp(EIN_EURO));
+        kundenInterface.wirfMuenzeEin(automatReferenz, Muenze.vomTyp(EIN_EURO));
+        kundenInterface.wirfMuenzeEin(automatReferenz, Muenze.vomTyp(EIN_EURO));
+        kundenInterface.wirfMuenzeEin(automatReferenz, Muenze.vomTyp(EIN_EURO));
+
+        getraenkeAutomat = getraenkeAutomatRepository.findById(automatReferenz);
+        Assertions.assertThat(getraenkeAutomat.get().getEingeworfeneMuenzen()).hasSize(4);
     }
 
     @Test

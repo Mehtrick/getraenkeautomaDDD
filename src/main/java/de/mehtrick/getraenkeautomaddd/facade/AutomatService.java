@@ -24,8 +24,9 @@ class AutomatService implements KundenInterface, WartungInterface {
     }
 
     @Override
-    public void wirfMuenzeEin(Muenze muenze) {
-
+    public void wirfMuenzeEin(long referenz, Muenze muenze) {
+        var getraenkeAutomat = getraenkeAutomatRepository.findById(referenz).orElseThrow();
+        getraenkeAutomat.wirfMuenzeEin(muenze);
     }
 
     @Override

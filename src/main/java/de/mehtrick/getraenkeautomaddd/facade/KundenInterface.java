@@ -8,7 +8,7 @@ import java.util.List;
 public interface KundenInterface {
 
     void waehleGetraenk(long automat, GetraenkeTyp getraenkeTyp);
-    void wirfMuenzeEin(Muenze muenze);
+    void wirfMuenzeEin(long automat,Muenze muenze);
 
     List<GetraenkeTyp> getGetraenkeAuswahl(Long automat);
 
