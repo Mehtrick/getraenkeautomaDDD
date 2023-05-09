@@ -1,0 +1,88 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+entity Getraenketyp <<Entity>>{
+    preis: int
+    name: string {final}
+}
+
+entity Getraenk <<ValueObject>>{
+    typ: Getraenketyp
+}
+
+
+entity GetraenkeBestand <<Entity>>{
+    - getraenke: Stack<Getraenk>
+    + sortiereGetraenkEin(getraenk: Getraenk): void
+    + entnehmeGetraenk(getraenkeTyp: Getraenketyp): Getraenk
+}
+
+
+entity GetraenkeAutomat <<RootEntity>> {
+    # bestand: GetraenkeBestand
+    # kassse: Kasse
+    # getraenkeAuswahl: List<Getraenketyp>
+    + getraenkeWunsch: Getraenketyp
+    + eingeworfeneMuenzen: List<Muenze>
+}
+
+
+entity Kasse <<Entity>>{
+    - muenzfaecher: Map<int, MuenzFach>
+    + sortiereMuenzeEin(muenze: Muenze): void
+    + istAusreichendWechselgeldVorhanden(wechselgeldBetrag: int): boolean
+    + entnehmeMuenze((wechselgeldBetrag: int): List<Muenze>
+}
+
+class MuenzFach <<Entity>>{
+    muenzen: List<Muenze>
+    sortiereMuenzeEin(muenze: Muenze): void
+    entnehmeMuenze(): Muenze
+}
+
+class Muenze <<ValueObject>>{
+    typ: MuenzTyp
+}
+
+enum MuenzTyp <<ValueObject>> {
+    + wert: int {final}
+    ZEHN_CENT(10)
+    ZWANZIG_CENT(20)
+    FUENFZIG_CENT(50)
+    EIN_EURO(100)
+    ZWEI_EURO(200)
+}
+
+GetraenkeAutomat "1" -left-> "1" GetraenkeBestand
+GetraenkeBestand "1" --> "0..n" Getraenk
+Getraenk  -right-|> Getraenketyp
+GetraenkeAutomat "1" --> "1..n" Getraenketyp
+
+
+GetraenkeAutomat "1" -right-> "1" Kasse
+Kasse "1" --> "0..n" MuenzFach
+MuenzFach "1" --> "0..n" Muenze
+Muenze  --> MuenzTyp
+
+
+interface Kunde {
+    + waehleGetraenk(getraenkeTyp: Getraenketyp): void
+    + wirfMuenzeEin(muenze: Muenze): void
+    + drueckeAbbruch(): void
+    + entnehmeGetraenk(): Getraenk
+    + entnehmeWechselgeld(): List<Muenze>
+    + kaufen(): void
+}
+
+interface Wartung{
+    + befuelleGetraenkeFach(getraenk: Getraenk): void
+    + befuelleMuenzFach(muenze: Muenze): void
+}
+
+
+Kunde <|.. GetraenkeAutomat
+Wartung <|.. GetraenkeAutomat
+
+
+
+@enduml
